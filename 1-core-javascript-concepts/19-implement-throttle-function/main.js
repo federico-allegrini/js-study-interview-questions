@@ -1,20 +1,25 @@
 // Create throttle function
+// The function will be executed immediatly, but after that other executions are ignored for the timeout value
 
 // Start from last debounce function
-const debounce = (func, timeout = 300) => {
-  let timer;
+const throttle = (func, timeout = 300) => {
+  let isWaiting = false;
   return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    if (!isWaiting) {
       func.apply(this, args);
-    }, timeout);
+      isWaiting = true;
+      setTimeout(() => {
+        isWaiting = false;
+      }, timeout);
+    }
   };
 };
 
 const saveInput = (name) => console.log("saveInput", name);
-const processChange = debounce(saveInput, 2000);
-// Only console log the last once, after 2 seconds
+const processChange = throttle(saveInput, 2000);
+// Only console log the first immediatly and the last after 2.4 seconds
+// The other 2 will be ignored
 processChange("Foo");
-processChange("Foo");
-processChange("Foo");
-processChange("Foo");
+setTimeout(() => processChange("Foo"), 1000);
+setTimeout(() => processChange("Foo"), 1200);
+setTimeout(() => processChange("Foo"), 2400);
