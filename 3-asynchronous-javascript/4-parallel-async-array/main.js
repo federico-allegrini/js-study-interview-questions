@@ -18,6 +18,37 @@ const asyncFunc3 = (callback) => {
   }, 1000);
 };
 
+// My solution
+//* const asyncParallel = (asyncFuncs, callback) => {
+//*   const resultArr = [];
+//*   let resultCounter = 0;
+//*   asyncFuncs.forEach((asyncFunc) => {
+//*     asyncFunc((value) => {
+//*       resultCounter++;
+//*       resultArr.push(value);
+//*       if (asyncFuncs.length === resultCounter) {
+//*         callback(resultArr.sort((a, b) => a - b));
+//*       }
+//*     });
+//*   });
+//* };
+
+// Solution
+const asyncParallel = (asyncFuncs, callback) => {
+  const resultArr = new Array(asyncFuncs.length);
+  let resultCounter = 0;
+  asyncFuncs.forEach((asyncFunc, index) => {
+    asyncFunc((value) => {
+      resultArr[index] = value;
+      resultCounter++;
+      if (resultCounter >= asyncFuncs.length) {
+        callback(resultArr);
+      }
+    });
+  });
+};
+
+// Execution
 asyncParallel([asyncFunc1, asyncFunc2, asyncFunc3], (result) => {
   console.log(result); // 1, 2, 3 (prints results of each asynchronous function in order)
 });
