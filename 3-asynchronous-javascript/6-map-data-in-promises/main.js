@@ -40,3 +40,39 @@ const getUserStatuses = () => {
     resolve(userStatuses);
   });
 };
+
+// My solution
+//* getUsers().then((users) => {
+//*   getUserStatuses().then((userStatuses) => {
+//*     const mappedUsers = userStatuses.map((userStatus) => ({
+//*       ...userStatus,
+//*       name: users[userStatus.id - 1].name,
+//*     }));
+//*     console.log(mappedUsers);
+//*   });
+//* });
+
+// Beginner approach
+//* getUsers().then((users) => {
+//*   getUserStatuses().then((userStatuses) => {
+//*     const mappedUsers = users.map((user) => {
+//*       const isActive = userStatuses.find(
+//*         (userStatus) => userStatus.id === user.id
+//*       ).isActive;
+//*       return { ...user, isActive };
+//*     });
+//*     console.log(mappedUsers);
+//*   });
+//* });
+
+// Advanced approach
+const mapUsers = (users, userStatuses) =>
+  users.map((user) => {
+    const isActive = userStatuses.find(
+      (userStatus) => userStatus.id === user.id
+    ).isActive;
+    return { ...user, isActive };
+  });
+Promise.all([getUsers(), getUserStatuses()])
+  .then(([users, userStatuses]) => mapUsers(users, userStatuses))
+  .then((mappedUsers) => console.log(mappedUsers));
