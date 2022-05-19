@@ -7,8 +7,10 @@ const typeOf = (input) => {
   return type;
 };
 
-// Start from shallow comparison
-const shallowCompare = (source, target) => {
+// Modify in deep comparison
+// Really slow for nested object, but do the right thing
+const deepCompare = (source, target) => {
+  // Same logic for data types
   if (typeOf(source) !== typeOf(target)) {
     return false;
   }
@@ -16,16 +18,60 @@ const shallowCompare = (source, target) => {
     if (source.length !== target.length) {
       return false;
     }
-    return source.every((element, index) => element === target[index]);
+    // Call recursively deep comparison for every element of array
+    return source.every((element, index) =>
+      deepCompare(element, target[index])
+    );
   }
   if (typeOf(source) === "object") {
     if (Object.keys(source).length !== Object.keys(target).length) {
       return false;
     }
-    return Object.keys(source).every((key) => source[key] === target[key]);
+    // Call recursively deep comparison for every element of object
+    return Object.keys(source).every((key) =>
+      deepCompare(source[key], target[key])
+    );
   }
+  // Same logic for dates
   if (typeOf(source) === "date") {
     return source.getTime() === target.getTime();
   }
+  // Same logic for primitives
   return source === target;
 };
+
+// Nested arrays
+console.log(deepCompare([[]], [[]])); // true
+console.log(deepCompare([[1]], [[1]])); // true
+console.log(deepCompare([1, [1, 2]], [1, [1, 2]])); // true
+console.log(deepCompare([1, [1, 2]], [1, [1, 3]])); // false
+console.log(
+  deepCompare(
+    [
+      [2, 3],
+      [1, 2],
+    ],
+    [
+      [2, 3],
+      [1, 2],
+    ]
+  )
+); // true
+console.log(
+  deepCompare(
+    [
+      [2, 3],
+      [1, 2],
+    ],
+    [
+      [2, 3],
+      [1, 3],
+    ]
+  )
+); // false
+
+// Nested objcects
+console.log(deepCompare({ a: { b: 1 } }, { a: { b: 1 } })); // true
+console.log(deepCompare({ a: { b: 1 } }, { a: { b: 2 } })); // false
+console.log(deepCompare({ a: { b: [1, 2] } }, { a: { b: [1, 2] } })); // true
+console.log(deepCompare({ a: { b: [1, 2] } }, { a: { b: [1, 3] } })); // false
