@@ -25,3 +25,27 @@ const bulkConfig = [
 ];
 
 // [{config_key: 100, location_key: 32, autoassign: 1}, {config_key: 100, location_key: 22, autoassign: 1}]
+
+// My solution
+//* const result = loc
+//*   .map((locEl, index) =>
+//*     locEl.location_key.map((location_key) => ({
+//*       location_key,
+//*       config_key: bulkConfig[index].dataValues.config_key,
+//*       autoassign: locEl.autoassign,
+//*     }))
+//*   )
+//*   .reduce((acc, el) => [...acc, ...el], []);
+
+// Solution
+const result = loc
+  .map((locEl, index) =>
+    locEl.location_key.map((locationKey) => ({
+      location_key: locationKey,
+      config_key: bulkConfig[index].dataValues.config_key,
+      autoassign: locEl.autoassign,
+    }))
+  )
+  .reduce((arr, acc) => arr.concat(acc), []);
+
+console.log(result);
