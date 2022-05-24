@@ -53,3 +53,27 @@ const flatList = [
 //    ]
 // }
 //]
+
+// Solution
+
+// TODO:
+// 1. Get root elements
+// 2. Check children if they have children
+// 3. If not -> return item with empty children
+// 4. If yes -> go to #2
+
+const addChildren = (parentItem, flatList) => {
+  const children = flatList.filter((item) => item.parentId === parentItem.id);
+  let nestedChildren = [];
+  if (children.length > 0) {
+    nestedChildren = children.map((child) => addChildren(child, flatList));
+  }
+  return Object.assign({}, parentItem, { children: nestedChildren });
+};
+
+const transformToNestedList = (flatList) =>
+  flatList
+    .filter((item) => item.parentId === null)
+    .map((item) => addChildren(item, flatList));
+
+console.log(transformToNestedList(flatList));
